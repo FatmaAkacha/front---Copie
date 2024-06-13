@@ -22,6 +22,19 @@ export class UserComponent implements OnInit {
   statuses: any[];
   rowsPerPageOptions = [5, 10, 20];
 
+  locations = [
+    { label: 'Sousse', value: 'Sousse' },
+    { label: 'Tunis', value: 'Tunis' },
+    { label: 'Sfax', value: 'Sfax' }
+  ];
+
+  specificLocations = [
+    { label: 'Manzel Cheker', value: 'Manzel Cheker' },
+    { label: '7 Novembre', value: '7 Novembre' }
+  ];
+
+  showSpecificLocation: boolean = false;
+
   constructor(private userService: DataService, private messageService: MessageService,
               private confirmationService: ConfirmationService, private breadcrumbService: BreadcrumbService) {
       this.breadcrumbService.setItems([
@@ -51,6 +64,7 @@ export class UserComponent implements OnInit {
       this.user = {} as User;
       this.submitted = false;
       this.userDialog = true;
+      this.showSpecificLocation = false;
   }
 
   deleteSelectedUsers() {
@@ -60,6 +74,7 @@ export class UserComponent implements OnInit {
   editUser(user: User) {
       this.user = { ...user };
       this.userDialog = true;
+      this.showSpecificLocation = this.user.location === 'Sfax';
   }
 
   deleteUser(user: User) {
@@ -100,18 +115,23 @@ export class UserComponent implements OnInit {
               this.userService.updateUser(this.user.id, this.user).subscribe(() => {
                 this.users[this.findIndexById(this.user.id)] = this.user;
                 this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'User Updated', life: 3000 });
+                this.refreshUserList();
               });
           } else {
               this.userService.insertData(this.user).subscribe((newUser: User) => {
                 this.users.push(newUser);
                 this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'User Created', life: 3000 });
+                this.refreshUserList();
               });
           }
 
-          this.users = [...this.users];
           this.userDialog = false;
           this.user = {} as User;
       }
+  }
+
+  refreshUserList() {
+      this.userService.getData().subscribe(data => this.users = data as User[]);
   }
 
   findIndexById(id: string): number {
@@ -125,12 +145,10 @@ export class UserComponent implements OnInit {
       return index;
   }
 
-  createId(): string {
-      let id = '';
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      for (let i = 0; i < 5; i++) {
-          id += chars.charAt(Math.floor(Math.random() * chars.length));
+  onLocationChange() {
+      this.showSpecificLocation = this.user.location === 'Sfax';
+      if (!this.showSpecificLocation) {
+          this.user.specific_location = null;
       }
-      return id;
   }
 }
