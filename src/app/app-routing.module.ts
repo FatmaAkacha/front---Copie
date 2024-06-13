@@ -30,6 +30,7 @@ import {AppCrudComponent} from './pages/app.crud.component';
 import {AppCalendarComponent} from './pages/app.calendar.component';
 import {AppTimelineDemoComponent} from './pages/app.timelinedemo.component';
 import {BlocksComponent} from './blocks/blocks/blocks.component';
+import { UserComponent } from './demo/component/user/user.component';
 
 @NgModule({
     imports: [
@@ -57,6 +58,7 @@ import {BlocksComponent} from './blocks/blocks/blocks.component';
                     {path: 'utilities/icons', component: IconsComponent},
                     {path: 'pages/empty', component: EmptyDemoComponent},
                     {path: 'pages/crud', component: AppCrudComponent},
+                    {path: 'pages/user', component: UserComponent},
                     {path: 'pages/calendar', component: AppCalendarComponent},
                     {path: 'pages/timeline', component: AppTimelineDemoComponent},
                     {path: 'components/charts', component: ChartsDemoComponent},
