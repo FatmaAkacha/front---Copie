@@ -1,0 +1,115 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedMissions()" [disabled]="!selectedMissions || !selectedMissions.length"></button>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="right">
+                    <button pButton pRipple label="Import" icon="pi pi-upload" class="p-button-help mr-2"></button>
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                </ng-template>
+            </p-toolbar>
+            <p-table #dt [value]="missions" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['id_user','date_debut','date_fin','nombre_installation','moyen','type_installation']" [paginator]="true" [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [(selection)]="selectedMissions" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Manage Missions</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="id_user">User ID <p-sortIcon field="id_user"></p-sortIcon></th>
+                        <th pSortableColumn="date_debut">Start Date <p-sortIcon field="date_debut"></p-sortIcon></th>
+                        <th pSortableColumn="date_fin">End Date <p-sortIcon field="date_fin"></p-sortIcon></th>
+                        <th pSortableColumn="nombre_installation">Installation Count <p-sortIcon field="nombre_installation"></p-sortIcon></th>
+                        <th pSortableColumn="moyen">Average <p-sortIcon field="moyen"></p-sortIcon></th>
+                        <th pSortableColumn="type_installation">Installation Type <p-sortIcon field="type_installation"></p-sortIcon></th>
+                        <th>Action</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-mission>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="mission"></p-tableCheckbox>
+                        </td>
+                        <td><span class="p-column-title">User ID</span>{{mission.id_user}}</td>
+                        <td><span class="p-column-title">Start Date</span>{{mission.date_debut | date}}</td>
+                        <td><span class="p-column-title">End Date</span>{{mission.date_fin | date}}</td>
+                        <td><span class="p-column-title">Installation Count</span>{{mission.nombre_installation}}</td>
+                        <td><span class="p-column-title">Average</span>{{mission.moyen}}</td>
+                        <td><span class="p-column-title">Installation Type</span>{{mission.type_installation}}</td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editMission(mission)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteMission(mission)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="missionDialog" [style]="{width: '450px'}" header="Mission Details" [modal]="true" class="p-fluid">
+            <ng-template pTemplate="content">
+                <div class="field">
+                    <label for="id_user">User ID</label>
+                    <input type="text" pInputText id="id_user" [(ngModel)]="mission.id_user" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !mission.id_user}" />
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !mission.id_user">User ID is required.</small>
+                </div>
+                <div class="field">
+                    <label for="date_debut">Start Date</label>
+                    <input type="date" pInputText id="date_debut" [(ngModel)]="mission.date_debut" required />
+                </div>
+                <div class="field">
+                    <label for="date_fin">End Date</label>
+                    <input type="date" pInputText id="date_fin" [(ngModel)]="mission.date_fin" required />
+                </div>
+                <div class="field">
+                    <label for="nombre_installation">Installation Count</label>
+                    <input type="number" pInputText id="nombre_installation" [(ngModel)]="mission.nombre_installation" required />
+                </div>
+                <div class="field">
+                    <label for="type_installation">Installation Type</label>
+                    <p-dropdown [options]="installationTypes" [(ngModel)]="mission.type_installation" placeholder="Select an Installation Type" [style]="{'width':'100%'}"></p-dropdown>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveMission()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteMissionDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="mission">Are you sure you want to delete <b>{{mission.id_user}}</b>'s mission?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteMissionDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteMissionsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Are you sure you want to delete the selected missions?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteMissionsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>
