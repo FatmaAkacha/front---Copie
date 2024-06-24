@@ -38,6 +38,7 @@ export class DataService {
   insertData1(data1: Mission): Observable<Mission> {
     return this.httpClient.post<Mission>('http://127.0.0.1:8000/api/addMission', data1);
   }
+  
 
   deleteData1(id: string): Observable<void> {
     return this.httpClient.delete<void>('http://127.0.0.1:8000/api/deleteMission/' + id);
@@ -49,5 +50,8 @@ export class DataService {
 
   updateMission(id: string, data1: Mission): Observable<Mission> {
     return this.httpClient.put<Mission>('http://127.0.0.1:8000/api/updateMission/' + id, data1);
+  }
+  getUsers(): Observable<User[]> {
+    return this.httpClient.get<User[]>('http://127.0.0.1:8000/api/users');
   }
 }
