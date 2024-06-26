@@ -131,8 +131,11 @@ expandedRows: any;
     console.log('Mission data:', this.mission);
 
     if (this.mission.id) {
-      this.missions[this.findIndexById(this.mission.id)] = this.mission;
-      this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Mission Updated', life: 3000 });
+      this.missionService.updateMission(this.mission.id, this.mission).subscribe(() => {
+        this.missions[this.findIndexById(this.mission.id)] = this.mission;
+        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Mission Updated', life: 3000 });
+        this.refreshMissionList();
+      });
     } else {
       this.mission.id = this.createId();
       this.missions.push(this.mission);
@@ -151,6 +154,10 @@ expandedRows: any;
     this.missions = [...this.missions];
     this.missionDialog = false;
   }
+
+  refreshMissionList() {
+    this.missionService.getData1().subscribe(data1 => this.missions = data1 as Mission[]);
+}
 
   findIndexById(id: string): number {
     let index = -1;
@@ -180,19 +187,28 @@ expandedRows: any;
     };
   }
 
+
   confirmDelete() {
     this.deleteMissionDialog = false;
-    this.missions = this.missions.filter(val => val.id !== this.mission.id);
-    this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Mission Deleted', life: 3000 });
-    this.mission = this.createEmptyMission();
-  }
+    this.missionService.deleteData1(this.mission.id).subscribe(() => {
+      this.missions = this.missions.filter(val => val.id !== this.mission.id);
+      this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Mission Deleted', life: 3000 });
+      this.mission = {} as Mission;
+    });
+}
 
   confirmDeleteSelected() {
     this.deleteMissionsDialog = false;
-    this.missions = this.missions.filter(val => !this.selectedMissions.includes(val));
+    this.selectedMissions.forEach(selectedMission => {
+      this.missionService.deleteData1(selectedMission.id).subscribe(() => {
+        this.missions = this.missions.filter(val => val.id !== selectedMission.id);
+      });
+    });
     this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Missions Deleted', life: 3000 });
-    this.selectedMissions = [];
-  }
+    this.selectedMissions = null;
+}
+
+
 
   getUserName(id_user: string): string {
     const user = this.users.find(user => user.id === id_user);
