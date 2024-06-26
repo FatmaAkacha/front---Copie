@@ -66,6 +66,7 @@ export class ClientComponent implements OnInit {
     this.client = { ...client };
   }
 
+
   confirmDeleteSelected() {
     this.deleteClientsDialog = false;
     this.selectedClients.forEach(selectedClient => {
@@ -75,7 +76,7 @@ export class ClientComponent implements OnInit {
     });
     this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Clients Deleted', life: 3000 });
     this.selectedClients = null;
-  }
+}
 
   confirmDelete() {
     this.deleteClientDialog = false;
