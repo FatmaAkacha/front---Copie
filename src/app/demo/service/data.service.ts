@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '../domain/user';
 import { Mission } from '../domain/mission';
 import { Observable } from 'rxjs';
+import { Client } from '../domain/client';
 
 @Injectable({
   providedIn: 'root'
@@ -54,4 +55,29 @@ export class DataService {
   getUsers(): Observable<User[]> {
     return this.httpClient.get<User[]>('http://127.0.0.1:8000/api/users');
   }
+  getClients(): Observable<Client[]> {
+    return this.httpClient.get<Client[]>('http://127.0.0.1:8000/api/clients');
+  }
+  ////////////////////////////////////////////////////////
+  getClient(): Observable<Client[]> {
+    return this.httpClient.get<Client[]>('http://127.0.0.1:8000/api/client');
+  }
+
+  insertClient(client: Client): Observable<Client> {
+    return this.httpClient.post<Client>('http://127.0.0.1:8000/api/addClient', client);
+  }
+  
+
+  deleteClient(id: string): Observable<void> {
+    return this.httpClient.delete<void>('http://127.0.0.1:8000/api/deleteClient/' + id);
+  }
+
+  getClientById(id: string): Observable<Client> {
+    return this.httpClient.get<Client>('http://127.0.0.1:8000/api/clients/' + id);
+  }
+
+  updateClient(id: string, client: Client): Observable<Client> {
+    return this.httpClient.put<Client>('http://127.0.0.1:8000/api/updateClient/' + id, client);
+  }
+  
 }

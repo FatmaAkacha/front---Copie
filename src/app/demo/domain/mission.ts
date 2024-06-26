@@ -1,5 +1,6 @@
 export interface Mission {
   id?: any;
+  client_id?: any;
   id_user: any;
   date_debut: any;
   date_fin: any;

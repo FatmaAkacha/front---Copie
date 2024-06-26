@@ -5,6 +5,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { BreadcrumbService } from 'src/app/breadcrumb.service';
 import { firstValueFrom } from 'rxjs';
 import { User } from '../../domain/user';
+import { Client } from '../../domain/client';
 
 @Component({
   selector: 'app-mission',
@@ -18,6 +19,7 @@ export class MissionComponent implements OnInit {
   deleteMissionDialog: boolean = false;
   deleteMissionsDialog: boolean = false;
   mission: Mission;
+  clients: Client[] = [];
   selectedMissions: Mission[] = [];
   submitted: boolean = false;
   cols: any[] = [];
@@ -34,6 +36,7 @@ export class MissionComponent implements OnInit {
     { label: 'Affecter', value: 'affecter' },
     { label: 'Terminer', value: 'terminer' },
   ];
+expandedRows: any;
 
   constructor(
     private missionService: DataService,
@@ -52,6 +55,7 @@ export class MissionComponent implements OnInit {
 
     this.cols = [
       { field: 'id_user', header: 'User ID' },
+      { field: 'client_id', header: 'Client ID' },
       { field: 'date_debut', header: 'Start Date' },
       { field: 'date_fin', header: 'End Date' },
       { field: 'nombre_installation', header: 'Installation Count' },
@@ -78,6 +82,14 @@ export class MissionComponent implements OnInit {
       console.log('Users loaded:', this.users);
     } catch (error) {
       console.error('Error loading users', error);
+    }
+  }
+  async loadClients() {
+    try {
+      this.clients = await firstValueFrom(this.missionService.getClients());
+      console.log('Clients loaded:', this.clients);
+    } catch (error) {
+      console.error('Error loading clents', error);
     }
   }
 

@@ -32,6 +32,7 @@ import {AppTimelineDemoComponent} from './pages/app.timelinedemo.component';
 import {BlocksComponent} from './blocks/blocks/blocks.component';
 import { UserComponent } from './demo/component/user/user.component';
 import { MissionComponent } from './demo/component/mission/mission.component';
+import { ClientComponent } from './demo/component/client/client.component';
 
 @NgModule({
     imports: [
@@ -61,6 +62,7 @@ import { MissionComponent } from './demo/component/mission/mission.component';
                     {path: 'pages/crud', component: AppCrudComponent},
                     {path: 'pages/user', component: UserComponent},
                     {path: 'pages/mission', component: MissionComponent},
+                    {path: 'pages/client', component: ClientComponent},
                     {path: 'pages/calendar', component: AppCalendarComponent},
                     {path: 'pages/timeline', component: AppTimelineDemoComponent},
                     {path: 'components/charts', component: ChartsDemoComponent},
