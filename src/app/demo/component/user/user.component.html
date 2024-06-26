@@ -76,11 +76,11 @@
                 </div>
                 <div class="field">
                     <label for="location">Location</label>
-                    <p-dropdown [options]="locations" [(ngModel)]="user.location" placeholder="Select a Location" (onChange)="onLocationChange()" [style]="{'width':'100%'}"></p-dropdown>
+                    <p-dropdown [options]="locations" [(ngModel)]="user.location" placeholder="Select a Location" (onChange)="onLocationChange()" [style]="{'width':'100%'}"appendTo="body"></p-dropdown>
                 </div>
                 <div class="field" *ngIf="showSpecificLocation">
                     <label for="specific_location">Specific Location</label>
-                    <p-dropdown [options]="specificLocations" [(ngModel)]="user.specific_location" placeholder="Select a Specific Location" [style]="{'width':'100%'}"></p-dropdown>
+                    <p-dropdown [options]="specificLocations" [(ngModel)]="user.specific_location" placeholder="Select a Specific Location" [style]="{'width':'100%'}" appendTo="body"></p-dropdown>
                 </div>
             </ng-template>
             <ng-template pTemplate="footer">

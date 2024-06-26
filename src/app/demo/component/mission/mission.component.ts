@@ -52,6 +52,7 @@ expandedRows: any;
   ngOnInit() {
     this.loadMissions();
     this.loadUsers();
+    this.loadClients();
 
     this.cols = [
       { field: 'id_user', header: 'User ID' },
@@ -116,12 +117,13 @@ expandedRows: any;
   hideDialog() {
     this.missionDialog = false;
     this.submitted = false;
+    this.mission = this.createEmptyMission();
   }
 
   saveMission() {
     this.submitted = true;
 
-    if (!this.mission.id_user || !this.mission.date_debut || !this.mission.date_fin || this.mission.nombre_installation === undefined) {
+    if (!this.mission.id_user ||!this.mission.client_id|| !this.mission.date_debut || !this.mission.date_fin || this.mission.nombre_installation === undefined) {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill all required fields', life: 3000 });
       return;
     }
@@ -148,7 +150,6 @@ expandedRows: any;
 
     this.missions = [...this.missions];
     this.missionDialog = false;
-    this.mission = this.createEmptyMission();
   }
 
   findIndexById(id: string): number {
@@ -169,6 +170,7 @@ expandedRows: any;
   createEmptyMission(): Mission {
     return {
       id_user: '',
+      client_id: '',
       date_debut: '',
       date_fin: '',
       nombre_installation: 0,
@@ -195,5 +197,9 @@ expandedRows: any;
   getUserName(id_user: string): string {
     const user = this.users.find(user => user.id === id_user);
     return user ? user.name : 'Unknown User';
+  }
+  getClientName(client_id: string): string {
+    const client = this.clients.find(client => client.id === client_id);
+    return client ? client.nom : 'Unknown Client';
   }
 }
