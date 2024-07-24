@@ -31,6 +31,7 @@ export class DataService {
   updateUser(id: string, data: User): Observable<User> {
     return this.httpClient.put<User>('http://127.0.0.1:8000/api/updateUser/' + id, data);
   }
+
   ////////////////////////////////
   getData1(): Observable<Mission[]> {
     return this.httpClient.get<Mission[]>('http://127.0.0.1:8000/api/missions');
@@ -39,7 +40,6 @@ export class DataService {
   insertData1(data1: Mission): Observable<Mission> {
     return this.httpClient.post<Mission>('http://127.0.0.1:8000/api/addMission', data1);
   }
-  
 
   deleteData1(id: string): Observable<void> {
     return this.httpClient.delete<void>('http://127.0.0.1:8000/api/deleteMission/' + id);
@@ -52,9 +52,11 @@ export class DataService {
   updateMission(id: string, data1: Mission): Observable<Mission> {
     return this.httpClient.put<Mission>('http://127.0.0.1:8000/api/updateMission/' + id, data1);
   }
+  
   getUsers(): Observable<User[]> {
     return this.httpClient.get<User[]>('http://127.0.0.1:8000/api/users');
   }
+
   ////////////////////////////////////////////////////////
   getClients(): Observable<Client[]> {
     return this.httpClient.get<Client[]>('http://127.0.0.1:8000/api/clients');
@@ -74,5 +76,10 @@ export class DataService {
 
   updateClient(id: string, client: Client): Observable<Client> {
     return this.httpClient.put<Client>('http://127.0.0.1:8000/api/updateClient/' + id, client);
+  }
+
+  // Add the new method for getting a client with their missions
+  getClientWithMissions(): Observable<Client[]> {
+    return this.httpClient.get<Client[]>('http://127.0.0.1:8000/api/clients');
   }
 }

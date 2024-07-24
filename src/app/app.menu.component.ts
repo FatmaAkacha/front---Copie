@@ -55,6 +55,7 @@ export class AppMenuComponent implements OnInit {
                     { label: 'Client', icon: 'pi pi-fw pi-id-card', routerLink: ['/pages/client'] },
                     { label: 'User', icon: 'pi pi-fw pi-user', routerLink: ['/pages/user'] },
                     { label: 'Mission', icon: 'pi pi-fw pi-briefcase', routerLink: ['/pages/mission'] },
+                    { label: 'Email', icon: 'pi pi-fw pi-envelope', routerLink: ['/pages/email'] },
 
                     { label: 'Calendar', icon: 'pi pi-fw pi-calendar-plus', routerLink: ['/pages/calendar'] },
                     { label: 'Timeline', icon: 'pi pi-fw pi-calendar', routerLink: ['/pages/timeline'] },

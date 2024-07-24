@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DataService } from '../../service/data.service';
 import { Mission } from '../../domain/mission';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -6,11 +6,11 @@ import { BreadcrumbService } from 'src/app/breadcrumb.service';
 import { firstValueFrom } from 'rxjs';
 import { User } from '../../domain/user';
 import { Client } from '../../domain/client';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-mission',
   templateUrl: './mission.component.html',
-  styleUrls: ['./mission.component.scss'],
   providers: [MessageService, ConfirmationService]
 })
 export class MissionComponent implements OnInit {
@@ -25,6 +25,10 @@ export class MissionComponent implements OnInit {
   cols: any[] = [];
   rowsPerPageOptions = [5, 10, 20];
   users: User[] = [];
+  isExpanded: boolean = false;
+  expandedRows = {};
+  rowGroupMetadata: any;
+
 
   installationTypes = [
     { label: 'Pro Resto', value: 'pro_resto' },
@@ -36,7 +40,12 @@ export class MissionComponent implements OnInit {
     { label: 'Affecter', value: 'affecter' },
     { label: 'Terminer', value: 'terminer' },
   ];
-expandedRows: any;
+  selectedClients: any;
+  clientMissions: any;
+
+  @ViewChild('dt') table: Table;
+  @ViewChild('filter') filter: ElementRef;
+dt: any;
 
   constructor(
     private missionService: DataService,
@@ -67,6 +76,10 @@ expandedRows: any;
 
     this.mission = this.createEmptyMission();
   }
+  getUserName(userId: string): string {
+    const user = this.users?.find(user => user.id === userId);
+    return user ? user.name : 'Unknown';
+  }
 
   async loadMissions() {
     try {
@@ -85,13 +98,27 @@ expandedRows: any;
       console.error('Error loading users', error);
     }
   }
+
   async loadClients() {
     try {
       this.clients = await firstValueFrom(this.missionService.getClients());
       console.log('Clients loaded:', this.clients);
     } catch (error) {
-      console.error('Error loading clents', error);
+      console.error('Error loading clients', error);
     }
+  }
+
+  expandAll() {
+    if (!this.isExpanded) {
+      this.missions.forEach(mission => this.expandedRows[mission.client_id] = true);
+    } else {
+      this.expandedRows = {};
+    }
+    this.isExpanded = !this.isExpanded;
+  }
+
+  onRowCollapse(event: any) {
+    delete this.expandedRows[event.data.client_id];
   }
 
   openNew() {
@@ -99,7 +126,9 @@ expandedRows: any;
     this.submitted = false;
     this.missionDialog = true;
   }
-
+  mailClient(clientId: string){
+    
+  }
   deleteSelectedMissions() {
     this.deleteMissionsDialog = true;
   }
@@ -123,7 +152,7 @@ expandedRows: any;
   saveMission() {
     this.submitted = true;
 
-    if (!this.mission.id_user ||!this.mission.client_id|| !this.mission.date_debut || !this.mission.date_fin || this.mission.nombre_installation === undefined) {
+    if (!this.mission.id_user || !this.mission.client_id || !this.mission.date_debut || !this.mission.date_fin || this.mission.nombre_installation === undefined) {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill all required fields', life: 3000 });
       return;
     }
@@ -157,7 +186,7 @@ expandedRows: any;
 
   refreshMissionList() {
     this.missionService.getData1().subscribe(data1 => this.missions = data1 as Mission[]);
-}
+  }
 
   findIndexById(id: string): number {
     let index = -1;
@@ -169,13 +198,13 @@ expandedRows: any;
     }
     return index;
   }
-
-  createId(): string {
-    return Math.random().toString(36).substr(2, 9);
+  getMissionsByClient(clientId: any): Mission[] {
+    return this.missions.filter(mission => mission.client_id === clientId);
   }
 
   createEmptyMission(): Mission {
     return {
+      id: '',
       id_user: '',
       client_id: '',
       date_debut: '',
@@ -187,35 +216,43 @@ expandedRows: any;
     };
   }
 
-
-  confirmDelete() {
-    this.deleteMissionDialog = false;
-    this.missionService.deleteData1(this.mission.id).subscribe(() => {
-      this.missions = this.missions.filter(val => val.id !== this.mission.id);
-      this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Mission Deleted', life: 3000 });
-      this.mission = {} as Mission;
-    });
-}
-
-  confirmDeleteSelected() {
-    this.deleteMissionsDialog = false;
-    this.selectedMissions.forEach(selectedMission => {
-      this.missionService.deleteData1(selectedMission.id).subscribe(() => {
-        this.missions = this.missions.filter(val => val.id !== selectedMission.id);
-      });
-    });
-    this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Missions Deleted', life: 3000 });
-    this.selectedMissions = null;
-}
-
-
-
-  getUserName(id_user: string): string {
-    const user = this.users.find(user => user.id === id_user);
-    return user ? user.name : 'Unknown User';
+  createId(): string {
+    return Math.random().toString(36).substr(2, 9);
   }
-  getClientName(client_id: string): string {
-    const client = this.clients.find(client => client.id === client_id);
-    return client ? client.nom : 'Unknown Client';
+
+  onSort() {
+    this.updateRowGroupMetaData();
+  }
+
+  updateRowGroupMetaData() {
+    this.rowGroupMetadata = {};
+
+    if (this.missions) {
+      for (let i = 0; i < this.missions.length; i++) {
+        const rowData = this.missions[i];
+        const clientName = rowData.client_id;
+
+        if (i === 0) {
+          this.rowGroupMetadata[clientName] = { index: 0, size: 1 };
+        } else {
+          const previousRowData = this.missions[i - 1];
+          const previousRowGroup = previousRowData.client_id;
+          if (clientName === previousRowGroup) {
+            this.rowGroupMetadata[clientName].size++;
+          } else {
+            this.rowGroupMetadata[clientName] = { index: i, size: 1 };
+          }
+        }
+      }
+    }
+  }
+
+  formatCurrency(value) {
+    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  }
+
+  clear(table: Table) {
+    table.clear();
+    this.filter.nativeElement.value = '';
   }
 }

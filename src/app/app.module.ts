@@ -151,6 +151,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { UserComponent } from './demo/component/user/user.component';
 import { MissionComponent } from './demo/component/mission/mission.component';
 import { ClientComponent } from './demo/component/client/client.component';
+import { EmailComponent } from './demo/component/email/email.component';
 
 FullCalendarModule.registerPlugins([
     dayGridPlugin,
@@ -289,7 +290,8 @@ FullCalendarModule.registerPlugins([
         BlockViewer,
         UserComponent,
         MissionComponent,
-        ClientComponent
+        ClientComponent,
+        EmailComponent
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},
